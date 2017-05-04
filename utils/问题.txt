@@ -1,0 +1,28 @@
+调用系统摄像头，发现拍出来的照片很模糊->自定义控件，CameraPreview:CameraPreview extends ViewGroup implements SurfaceHolder.Callback, Camera.AutoFocusCallback
+
+调用系统摄像头拍出来的照片保存不到图库-》
+        // 其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(getContentResolver(),
+                    file.getAbsolutePath(), photoName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 最后通知图库更新
+        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getAbsolutePath())));
+
+接受不到系统的notification-》
+	 /**
+     * 提醒
+     *
+     * @param context
+     */
+    public static void toggleNotificationListenerService(Context context) {
+        Logger.e("", "toggleNotificationListenerService");
+        PackageManager pm = context.getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(context, MyNotification.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+
+        pm.setComponentEnabledSetting(new ComponentName(context, MyNotification.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
